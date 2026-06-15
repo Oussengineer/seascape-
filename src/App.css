@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white font-sans text-deep antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+  }
+
+  /* Décalage pour la navbar fixe lors du scroll vers une ancre */
+  section[id],
+  header[id] {
+    scroll-margin-top: 5rem;
+  }
+}
+
+@layer components {
+  /* Conteneur de section centré */
+  .container-x {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  }
+
+  /* Titre de section */
+  .section-title {
+    @apply font-display text-3xl font-bold leading-tight text-deep sm:text-4xl md:text-[2.75rem];
+  }
+
+  /* Petit label or au-dessus des titres */
+  .eyebrow {
+    @apply mb-3 inline-block text-sm font-semibold uppercase tracking-[0.25em] text-gold;
+  }
+
+  /* Carte générique */
+  .card {
+    @apply rounded-2xl border border-deep/5 bg-white p-6 shadow-[0_10px_30px_-12px_rgba(10,35,66,0.18)] transition-all duration-300;
+  }
+
+  .card-hover {
+    @apply hover:-translate-y-1.5 hover:shadow-[0_22px_45px_-15px_rgba(10,35,66,0.32)];
+  }
+}
+
+/* --- Révélation au scroll (fade-in) --- */
+.reveal {
+  opacity: 0;
+  transform: translateY(36px);
+  transition:
+    opacity 0.7s ease-out,
+    transform 0.7s ease-out;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- Ligne verticale animée de la timeline --- */
+.timeline-line {
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 1.2s ease-out;
+}
+
+.timeline-line.is-visible {
+  transform: scaleY(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal,
+  .timeline-line {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}
