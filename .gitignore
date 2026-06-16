@@ -5,3 +5,9 @@ dist-ssr
 .DS_Store
 npm-debug.log*
 .claude/
+
+# Médias sources lourds (dossier de travail)
+/image et vedio/
+
+# Vidéos trop volumineuses pour GitHub (> 100 Mo) — à compresser puis héberger
+public/media/*.mp4

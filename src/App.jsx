@@ -1,6 +1,7 @@
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Apropos from './components/Apropos'
+import Galerie from './components/Galerie'
 import AccueilRepas from './components/AccueilRepas'
 import Activites from './components/Activites'
 import Tarifs from './components/Tarifs'
@@ -16,6 +17,7 @@ export default function App() {
       <Hero />
       <main>
         <Apropos />
+        <Galerie />
         <AccueilRepas />
         <Activites />
         <Tarifs />

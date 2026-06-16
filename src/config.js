@@ -4,10 +4,10 @@
 
 // Numéro WhatsApp au format international SANS le "+" ni espaces.
 // Exemple Tunisie : 21612345678
-export const WHATSAPP_NUMBER = '216XXXXXXXX'
+export const WHATSAPP_NUMBER = '21652334449'
 
-// Numéro de téléphone affiché (format lisible) — À COMPLÉTER
-export const PHONE_DISPLAY = '+216 XX XXX XXX'
+// Numéro de téléphone affiché (format lisible)
+export const PHONE_DISPLAY = '+216 52 334 449'
 
 // Compte Instagram
 export const INSTAGRAM_HANDLE = 'seascape_expeditions'
@@ -20,7 +20,7 @@ export const MAPS_EMBED_URL =
 
 // --- TARIFS (en Dinars Tunisiens) ---
 export const PRICES = {
-  adulte: 0, // ⚠️ À COMPLÉTER — prix adulte en DT
+  adulte: 115, // Journée crique — prix adulte en DT
   enfant10_15: 60, // Enfant 10–15 ans
   enfantMoins10: 0, // Enfant − de 10 ans : GRATUIT
   baladeBateau: 100, // Option balade en bateau annexe (par groupe de 5 max)

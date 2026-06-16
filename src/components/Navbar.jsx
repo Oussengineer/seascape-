@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 const liens = [
   { label: 'Accueil', id: 'hero' },
   { label: 'À propos', id: 'apropos' },
+  { label: 'Galerie', id: 'galerie' },
   { label: 'Notre activité', id: 'programme' },
   { label: 'Tarifs', id: 'tarifs' },
   { label: 'Contact', id: 'contact' },
