@@ -1,4 +1,5 @@
 import { WHATSAPP_NUMBER, INSTAGRAM_HANDLE, INSTAGRAM_URL } from '../config'
+import Logo from './Logo'
 
 export default function Footer() {
   return (
@@ -6,10 +7,8 @@ export default function Footer() {
       <div className="container-x py-14">
         <div className="flex flex-col items-center gap-8 text-center md:flex-row md:items-start md:justify-between md:text-left">
           <div>
-            <p className="font-display text-2xl font-bold">
-              Seascape <span className="text-turquoise-light">Expeditions</span>
-            </p>
-            <p className="mt-2 text-sm text-turquoise-light/80">
+            <Logo className="h-16 w-16" />
+            <p className="mt-3 text-sm text-turquoise-light/80">
               El Haouaria · Cap Bon · Tunisie
             </p>
           </div>

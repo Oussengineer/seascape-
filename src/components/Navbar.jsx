@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Logo from './Logo'
 
 const liens = [
   { label: 'Accueil', id: 'hero' },
@@ -33,17 +34,10 @@ export default function Navbar() {
         solide ? 'bg-white/95 shadow-md backdrop-blur-md' : 'bg-transparent'
       }`}
     >
-      <div className="container-x flex h-16 items-center justify-between sm:h-20">
+      <div className="container-x flex h-24 items-center justify-between sm:h-28">
         {/* Logo */}
-        <button
-          onClick={() => aller('hero')}
-          className={`flex items-center gap-2 font-display text-lg font-bold transition-colors sm:text-xl ${
-            solide ? 'text-deep' : 'text-white'
-          }`}
-        >
-          <span className="text-xl">🌊</span>
-          Seascape
-          <span className={solide ? 'text-turquoise' : 'text-turquoise-light'}>Expeditions</span>
+        <button onClick={() => aller('hero')} aria-label="Accueil Seascape Expeditions">
+          <Logo className="h-16 w-16 sm:h-20 sm:w-20" />
         </button>
 
         {/* Liens desktop */}

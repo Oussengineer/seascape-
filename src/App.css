@@ -20,7 +20,7 @@
   /* Décalage pour la navbar fixe lors du scroll vers une ancre */
   section[id],
   header[id] {
-    scroll-margin-top: 5rem;
+    scroll-margin-top: 7rem;
   }
 }
 
