@@ -7,6 +7,11 @@ const photos = [
     desc: 'Une table généreuse, faite maison, face à la mer',
   },
   {
+    src: '/media/scuba.jpeg',
+    titre: 'Plongée sous-marine (Scuba Diving)',
+    desc: 'Explorez les fonds marins du Cap Bon — selon disponibilité',
+  },
+  {
     src: '/media/charcuterie.jpeg',
     titre: 'La charcuterie',
     desc: 'Produits frais et locaux pour bien démarrer',
