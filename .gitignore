@@ -11,3 +11,10 @@ npm-debug.log*
 
 # Vidéos trop volumineuses pour GitHub (> 100 Mo) — à compresser puis héberger
 public/media/*.mp4
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
