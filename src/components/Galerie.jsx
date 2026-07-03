@@ -1,18 +1,5 @@
 import Reveal from './Reveal'
 
-const videos = [
-  {
-    src: '/media/video-crique.mp4',
-    titre: 'La crique',
-    desc: 'Un coin de paradis préservé, rien que pour vous',
-  },
-  {
-    src: '/media/video-mer.mp4',
-    titre: 'La mer',
-    desc: 'Des eaux cristallines à perte de vue',
-  },
-]
-
 const photos = [
   {
     src: '/media/repas.jpeg',
@@ -31,41 +18,15 @@ export default function Galerie() {
     <section id="galerie" className="bg-deep py-20 text-white sm:py-28">
       <div className="container-x">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <p className="eyebrow">En images & vidéos</p>
-          <h2 className="section-title text-white">Plongez dans l’ambiance</h2>
+          <p className="eyebrow">En images</p>
+          <h2 className="section-title text-white">Plongez dans l&rsquo;ambiance</h2>
           <p className="mt-3 text-lg text-turquoise-light/90">
             La crique, la mer et la table de Seascape Expeditions.
           </p>
         </Reveal>
 
-        {/* Vidéos */}
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
-          {videos.map((v, i) => (
-            <Reveal key={v.src} delay={i * 120}>
-              <figure className="group overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-xl">
-                <video
-                  className="aspect-video w-full bg-black object-cover"
-                  src={v.src}
-                  controls
-                  preload="metadata"
-                  playsInline
-                  loop
-                  muted
-                />
-                <figcaption className="flex items-center gap-3 px-5 py-4">
-                  <span className="text-2xl">🎥</span>
-                  <span>
-                    <span className="block font-display text-lg font-bold">{v.titre}</span>
-                    <span className="block text-sm text-turquoise-light/80">{v.desc}</span>
-                  </span>
-                </figcaption>
-              </figure>
-            </Reveal>
-          ))}
-        </div>
-
         {/* Photos */}
-        <div className="mt-6 grid gap-6 md:grid-cols-2">
+        <div className="mt-12 grid gap-6 md:grid-cols-2">
           {photos.map((p, i) => (
             <Reveal key={p.src} delay={i * 120}>
               <figure className="group relative overflow-hidden rounded-3xl shadow-xl">
