@@ -75,18 +75,14 @@ export default function Activites() {
                   Plongée sous-marine (Scuba Diving)
                 </h3>
                 <ul className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-deep/75">
-                  <li>👤 100 DT / personne</li>
-                  <li>⏱️ Selon disponibilité</li>
+                  <li>👤 Selon disponibilité</li>
                 </ul>
               </div>
               <div className="text-left sm:text-right">
-                <p className="font-display text-3xl font-bold text-turquoise">100 DT</p>
-                <p className="text-sm text-deep/60">/ personne</p>
+                <p className="font-display text-xl font-bold text-turquoise">À discuter</p>
+                <p className="text-sm text-deep/60">sur WhatsApp</p>
               </div>
             </div>
-            <p className="mt-3 text-xs text-deep/50 border-t border-deep/5 pt-3">
-              💬 Selon la disponibilité — à discuter sur WhatsApp
-            </p>
           </div>
         </Reveal>
       </div>

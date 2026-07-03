@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import Reveal from './Reveal'
-import { WHATSAPP_NUMBER, PRICES, PLATS_SUPP, SCUBA_DIVING_PRICE } from '../config'
+import { WHATSAPP_NUMBER, PRICES, PLATS_SUPP } from '../config'
 
 const aujourdhui = new Date().toISOString().split('T')[0]
 
@@ -74,8 +74,7 @@ export default function Formulaire() {
     const a = Number(form.adultes) * PRICES.adulte
     const e = Number(form.enfants1015) * PRICES.enfant10_15
     const b = form.baladeBateau ? PRICES.baladeBateau : 0
-    const s = form.scubaDiving ? SCUBA_DIVING_PRICE : 0
-    let t = a + e + b + s
+    let t = a + e + b
     if (appliedCoupon) {
       if (appliedCoupon.type === 'percentage') {
         t -= t * (appliedCoupon.value / 100)
@@ -115,7 +114,7 @@ export default function Formulaire() {
       `👦 Enfants 10–15 ans : ${form.enfants1015}\n` +
       `👶 Enfants −10 ans : ${form.enfantsMoins10}\n` +
       `🚤 Option bateau annexe : ${form.baladeBateau ? 'Oui' : 'Non'}\n` +
-      `🤿 Plongée sous-marine (Scuba Diving) : ${form.scubaDiving ? 'Oui' : 'Non'}\n` +
+      `🤿 Plongée sous-marine (Scuba Diving) : ${form.scubaDiving ? 'Oui (à discuter)' : 'Non'}\n` +
       `🍽️ Plats supplémentaires : ${plats}\n` +
       (appliedCoupon ? `🎟️ Code promo : ${appliedCoupon.code} (${reductionText})\n` : '') +
       `💬 Message : ${msg}\n\n` +
@@ -202,7 +201,7 @@ export default function Formulaire() {
                 <span className="text-deep/85">
                   <span className="font-semibold text-deep">🤿 Plongée sous-marine (Scuba Diving)</span>
                   <span className="block text-sm text-deep/60">
-                    {SCUBA_DIVING_PRICE} DT / personne · Selon disponibilité — à discuter sur WhatsApp
+                    Selon disponibilité — à discuter sur WhatsApp
                   </span>
                 </span>
               </label>
@@ -276,7 +275,7 @@ export default function Formulaire() {
                 {form.scubaDiving && (
                   <li className="flex justify-between">
                     <span>Plongée sous-marine (Scuba Diving)</span>
-                    <span>{SCUBA_DIVING_PRICE} DT</span>
+                    <span className="text-deep/60">à discuter</span>
                   </li>
                 )}
                 {form.platsSupp.length > 0 && (
