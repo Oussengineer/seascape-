@@ -23,8 +23,11 @@ export const PRICES = {
   adulte: 115, // Journée crique — prix adulte en DT
   enfant10_15: 60, // Enfant 10–15 ans
   enfantMoins10: 0, // Enfant − de 10 ans : GRATUIT
-  baladeBateau: 100, // Option balade en bateau annexe (par groupe de 5 max)
+  baladeBateau: 100, // Option balade en bateau annexe (par personne)
 }
+
+// --- Scuba Diving ---
+export const SCUBA_DIVING_PRICE = 100
 
 // --- Plats supplémentaires (sur commande) ---
 export const PLATS_SUPP = [

@@ -1,9 +1,15 @@
 import { useMemo, useState } from 'react'
 import Reveal from './Reveal'
-import { WHATSAPP_NUMBER, PRICES, PLATS_SUPP } from '../config'
+import { WHATSAPP_NUMBER, PRICES, PLATS_SUPP, SCUBA_DIVING_PRICE } from '../config'
 
-// Date du jour au format YYYY-MM-DD (pour bloquer les dates passées)
 const aujourdhui = new Date().toISOString().split('T')[0]
+
+const COUPONS_KEY = 'seascape_coupons'
+
+function getCoupons() {
+  try { return JSON.parse(localStorage.getItem(COUPONS_KEY)) || [] }
+  catch { return [] }
+}
 
 const etatInitial = {
   nom: '',
@@ -13,6 +19,7 @@ const etatInitial = {
   enfants1015: 0,
   enfantsMoins10: 0,
   baladeBateau: false,
+  scubaDiving: false,
   platsSupp: [],
   message: '',
 }
@@ -33,6 +40,9 @@ const inputClass =
 
 export default function Formulaire() {
   const [form, setForm] = useState(etatInitial)
+  const [couponCode, setCouponCode] = useState('')
+  const [appliedCoupon, setAppliedCoupon] = useState(null)
+  const [couponError, setCouponError] = useState('')
 
   const update = (champ) => (e) => {
     const { type, value, checked } = e.target
@@ -48,13 +58,40 @@ export default function Formulaire() {
     }))
   }
 
-  // --- Total estimé ---
+  const applyCoupon = () => {
+    const coupons = getCoupons()
+    const found = coupons.find(c => c.code === couponCode.toUpperCase() && c.active)
+    if (found) {
+      setAppliedCoupon(found)
+      setCouponError('')
+    } else {
+      setAppliedCoupon(null)
+      setCouponError('Code invalide ou inactif')
+    }
+  }
+
   const total = useMemo(() => {
     const a = Number(form.adultes) * PRICES.adulte
     const e = Number(form.enfants1015) * PRICES.enfant10_15
     const b = form.baladeBateau ? PRICES.baladeBateau : 0
-    return a + e + b
-  }, [form.adultes, form.enfants1015, form.baladeBateau])
+    const s = form.scubaDiving ? SCUBA_DIVING_PRICE : 0
+    let t = a + e + b + s
+    if (appliedCoupon) {
+      if (appliedCoupon.type === 'percentage') {
+        t -= t * (appliedCoupon.value / 100)
+      } else {
+        t -= appliedCoupon.value
+      }
+      if (t < 0) t = 0
+    }
+    return Math.round(t * 100) / 100
+  }, [form.adultes, form.enfants1015, form.baladeBateau, form.scubaDiving, appliedCoupon])
+
+  const reductionText = appliedCoupon
+    ? appliedCoupon.type === 'percentage'
+      ? `-${appliedCoupon.value}%`
+      : `-${appliedCoupon.value} DT`
+    : ''
 
   const dateFr = form.date
     ? new Date(form.date + 'T00:00:00').toLocaleDateString('fr-FR', {
@@ -65,7 +102,6 @@ export default function Formulaire() {
       })
     : ''
 
-  // --- Construction du message WhatsApp ---
   const construireMessage = () => {
     const plats = form.platsSupp.length ? form.platsSupp.join(', ') : 'Aucun'
     const msg = form.message.trim() || 'Aucun'
@@ -79,7 +115,9 @@ export default function Formulaire() {
       `👦 Enfants 10–15 ans : ${form.enfants1015}\n` +
       `👶 Enfants −10 ans : ${form.enfantsMoins10}\n` +
       `🚤 Option bateau annexe : ${form.baladeBateau ? 'Oui' : 'Non'}\n` +
+      `🤿 Plongée sous-marine (Scuba Diving) : ${form.scubaDiving ? 'Oui' : 'Non'}\n` +
       `🍽️ Plats supplémentaires : ${plats}\n` +
+      (appliedCoupon ? `🎟️ Code promo : ${appliedCoupon.code} (${reductionText})\n` : '') +
       `💬 Message : ${msg}\n\n` +
       `Merci !`
     )
@@ -101,47 +139,23 @@ export default function Formulaire() {
         </Reveal>
 
         <Reveal delay={100} className="mx-auto mt-12 max-w-3xl">
-          <form
-            onSubmit={envoyer}
-            className="card space-y-6 border-turquoise/15 p-6 sm:p-9"
-          >
+          <form onSubmit={envoyer} className="card space-y-6 border-turquoise/15 p-6 sm:p-9">
             {/* Identité */}
             <div className="grid gap-5 sm:grid-cols-2">
               <Champ label="Prénom et Nom" htmlFor="nom">
-                <input
-                  id="nom"
-                  type="text"
-                  required
-                  value={form.nom}
-                  onChange={update('nom')}
-                  placeholder="Ex : Amira Ben Salah"
-                  className={inputClass}
-                />
+                <input id="nom" type="text" required value={form.nom} onChange={update('nom')}
+                  placeholder="Ex : Amira Ben Salah" className={inputClass} />
               </Champ>
               <Champ label="Numéro de téléphone" htmlFor="telephone">
-                <input
-                  id="telephone"
-                  type="tel"
-                  required
-                  value={form.telephone}
-                  onChange={update('telephone')}
-                  placeholder="Ex : +216 ..."
-                  className={inputClass}
-                />
+                <input id="telephone" type="tel" required value={form.telephone} onChange={update('telephone')}
+                  placeholder="Ex : +216 ..." className={inputClass} />
               </Champ>
             </div>
 
             {/* Date */}
             <Champ label="Date souhaitée" htmlFor="date">
-              <input
-                id="date"
-                type="date"
-                required
-                min={aujourdhui}
-                value={form.date}
-                onChange={update('date')}
-                className={inputClass}
-              />
+              <input id="date" type="date" required min={aujourdhui} value={form.date}
+                onChange={update('date')} className={inputClass} />
             </Champ>
 
             {/* Participants */}
@@ -169,52 +183,72 @@ export default function Formulaire() {
               </Champ>
             </div>
 
-            {/* Option bateau */}
-            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-gold/30 bg-sand/30 p-4 transition hover:bg-sand/50">
-              <input
-                type="checkbox"
-                checked={form.baladeBateau}
-                onChange={update('baladeBateau')}
-                className="mt-1 h-5 w-5 flex-shrink-0 accent-gold"
-              />
-              <span className="text-deep/85">
-                <span className="font-semibold text-deep">🚤 Balade en bateau annexe</span>
-                <span className="block text-sm text-deep/60">
-                  Groupe de 5 max · 30 min · {PRICES.baladeBateau} DT / groupe
+            {/* Options supplémentaires */}
+            <div className="space-y-3">
+              <p className="text-sm font-semibold text-deep">Options supplémentaires</p>
+              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-gold/30 bg-sand/30 p-4 transition hover:bg-sand/50">
+                <input type="checkbox" checked={form.baladeBateau} onChange={update('baladeBateau')}
+                  className="mt-1 h-5 w-5 flex-shrink-0 accent-gold" />
+                <span className="text-deep/85">
+                  <span className="font-semibold text-deep">🚤 Balade en bateau annexe</span>
+                  <span className="block text-sm text-deep/60">
+                    Groupe de 5 max · 30 min · {PRICES.baladeBateau} DT / groupe
+                  </span>
                 </span>
-              </span>
-            </label>
+              </label>
+              <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-turquoise/30 bg-turquoise/5 p-4 transition hover:bg-turquoise/10">
+                <input type="checkbox" checked={form.scubaDiving} onChange={update('scubaDiving')}
+                  className="mt-1 h-5 w-5 flex-shrink-0 accent-turquoise" />
+                <span className="text-deep/85">
+                  <span className="font-semibold text-deep">🤿 Plongée sous-marine (Scuba Diving)</span>
+                  <span className="block text-sm text-deep/60">
+                    {SCUBA_DIVING_PRICE} DT / personne · Selon disponibilité — à discuter sur WhatsApp
+                  </span>
+                </span>
+              </label>
+            </div>
 
             {/* Plats supplémentaires */}
             <Champ label="Plats supplémentaires souhaités ?">
               <div className="grid gap-2.5 sm:grid-cols-2">
                 {PLATS_SUPP.map((plat) => (
-                  <label
-                    key={plat}
-                    className="flex cursor-pointer items-center gap-3 rounded-xl border border-deep/10 px-4 py-2.5 text-sm text-deep/85 transition hover:border-turquoise/40 hover:bg-turquoise/5"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={form.platsSupp.includes(plat)}
-                      onChange={() => togglePlat(plat)}
-                      className="h-4 w-4 flex-shrink-0 accent-turquoise"
-                    />
+                  <label key={plat}
+                    className="flex cursor-pointer items-center gap-3 rounded-xl border border-deep/10 px-4 py-2.5 text-sm text-deep/85 transition hover:border-turquoise/40 hover:bg-turquoise/5">
+                    <input type="checkbox" checked={form.platsSupp.includes(plat)} onChange={() => togglePlat(plat)}
+                      className="h-4 w-4 flex-shrink-0 accent-turquoise" />
                     {plat}
                   </label>
                 ))}
               </div>
             </Champ>
 
+            {/* Coupon */}
+            <div>
+              <label className="mb-1.5 block text-sm font-semibold text-deep">Code promo</label>
+              <div className="flex gap-3">
+                <input type="text" placeholder="Ex : PROMO10" value={couponCode}
+                  onChange={e => { setCouponCode(e.target.value); setAppliedCoupon(null); setCouponError('') }}
+                  className={inputClass + ' flex-1'} />
+                <button type="button" onClick={applyCoupon}
+                  className="rounded-full bg-turquoise px-6 py-3 text-sm font-semibold text-white transition hover:bg-turquoise/90">
+                  Appliquer
+                </button>
+              </div>
+              {appliedCoupon && (
+                <p className="mt-1.5 text-sm text-green-600">
+                  ✓ Code appliqué : {reductionText}
+                </p>
+              )}
+              {couponError && (
+                <p className="mt-1.5 text-sm text-red-500">{couponError}</p>
+              )}
+            </div>
+
             {/* Message */}
             <Champ label="Message / demande spéciale" htmlFor="message">
-              <textarea
-                id="message"
-                rows={3}
-                value={form.message}
-                onChange={update('message')}
+              <textarea id="message" rows={3} value={form.message} onChange={update('message')}
                 placeholder="Ex : menu végétarien pour 2 personnes, allergies, etc."
-                className={inputClass + ' resize-none'}
-              />
+                className={inputClass + ' resize-none'} />
             </Champ>
 
             {/* Résumé automatique */}
@@ -239,10 +273,24 @@ export default function Formulaire() {
                     <span>{PRICES.baladeBateau} DT</span>
                   </li>
                 )}
+                {form.scubaDiving && (
+                  <li className="flex justify-between">
+                    <span>Plongée sous-marine (Scuba Diving)</span>
+                    <span>{SCUBA_DIVING_PRICE} DT</span>
+                  </li>
+                )}
                 {form.platsSupp.length > 0 && (
                   <li className="flex justify-between text-deep/60">
                     <span>Plats supplémentaires ({form.platsSupp.length})</span>
                     <span>sur commande</span>
+                  </li>
+                )}
+                {appliedCoupon && (
+                  <li className="flex justify-between text-green-600 font-semibold">
+                    <span>Réduction ({appliedCoupon.code})</span>
+                    <span>-{appliedCoupon.type === 'percentage'
+                      ? Math.round(total / (1 - appliedCoupon.value / 100) * appliedCoupon.value / 100) + ' DT'
+                      : appliedCoupon.value + ' DT'}</span>
                   </li>
                 )}
               </ul>
@@ -256,10 +304,8 @@ export default function Formulaire() {
             </div>
 
             {/* Envoi */}
-            <button
-              type="submit"
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-8 py-4 text-base font-semibold text-white shadow-lg shadow-[#25D366]/25 transition-all hover:-translate-y-0.5 hover:bg-[#1ebe5b] hover:shadow-xl"
-            >
+            <button type="submit"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-8 py-4 text-base font-semibold text-white shadow-lg shadow-[#25D366]/25 transition-all hover:-translate-y-0.5 hover:bg-[#1ebe5b] hover:shadow-xl">
               Envoyer via WhatsApp 🟢
             </button>
             <p className="text-center text-xs text-deep/50">

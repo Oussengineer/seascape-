@@ -33,7 +33,7 @@ export default function Activites() {
           ))}
         </div>
 
-        {/* Option payante */}
+        {/* Option payante — Bateau annexe */}
         <Reveal delay={120} className="mt-8">
           <div className="card card-hover relative overflow-hidden border-gold/30 bg-gradient-to-br from-white to-sand/50">
             <span className="absolute right-5 top-5 rounded-full bg-gold px-3 py-1 text-xs font-bold uppercase tracking-wider text-deep">
@@ -57,6 +57,36 @@ export default function Activites() {
                 <p className="text-sm text-deep/60">/ groupe</p>
               </div>
             </div>
+          </div>
+        </Reveal>
+
+        {/* Option payante — Scuba Diving */}
+        <Reveal delay={160} className="mt-5">
+          <div className="card card-hover relative overflow-hidden border-turquoise/30 bg-gradient-to-br from-white to-turquoise/5">
+            <span className="absolute right-5 top-5 rounded-full bg-turquoise px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+              Nouveau
+            </span>
+            <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+              <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-turquoise/15 text-4xl">
+                🤿
+              </div>
+              <div className="flex-1">
+                <h3 className="font-display text-2xl font-bold text-deep">
+                  Plongée sous-marine (Scuba Diving)
+                </h3>
+                <ul className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-deep/75">
+                  <li>👤 100 DT / personne</li>
+                  <li>⏱️ Selon disponibilité</li>
+                </ul>
+              </div>
+              <div className="text-left sm:text-right">
+                <p className="font-display text-3xl font-bold text-turquoise">100 DT</p>
+                <p className="text-sm text-deep/60">/ personne</p>
+              </div>
+            </div>
+            <p className="mt-3 text-xs text-deep/50 border-t border-deep/5 pt-3">
+              💬 Selon la disponibilité — à discuter sur WhatsApp
+            </p>
           </div>
         </Reveal>
       </div>
