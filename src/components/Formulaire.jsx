@@ -5,6 +5,7 @@ import { WHATSAPP_NUMBER, PRICES, PLATS_SUPP } from '../config'
 const aujourdhui = new Date().toISOString().split('T')[0]
 
 const COUPONS_KEY = 'seascape_coupons'
+const BOOKINGS_KEY = 'seascape_bookings'
 
 function getCoupons() {
   try { return JSON.parse(localStorage.getItem(COUPONS_KEY)) || [] }
@@ -124,6 +125,26 @@ export default function Formulaire() {
 
   const envoyer = (e) => {
     e.preventDefault()
+    if (appliedCoupon) {
+      try {
+        const bookings = JSON.parse(localStorage.getItem(BOOKINGS_KEY)) || []
+        bookings.push({
+          couponCode: appliedCoupon.code,
+          nom: form.nom,
+          telephone: form.telephone,
+          date: form.date,
+          adultes: form.adultes,
+          enfants1015: form.enfants1015,
+          enfantsMoins10: form.enfantsMoins10,
+          baladeBateau: form.baladeBateau,
+          scubaDiving: form.scubaDiving,
+          platsSupp: form.platsSupp,
+          message: form.message,
+          timestamp: new Date().toISOString()
+        })
+        localStorage.setItem(BOOKINGS_KEY, JSON.stringify(bookings))
+      } catch {}
+    }
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(construireMessage())}`
     window.open(url, '_blank', 'noopener,noreferrer')
   }
