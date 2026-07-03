@@ -3,7 +3,7 @@
 // =============================================================
 
 // URL de l'API Worker Cloudflare (coupons & réservations)
-export const API_URL = 'https://seascape-api.korkadooussema.workers.dev'
+export const API_URL = ''
 
 // Numéro WhatsApp au format international SANS le "+" ni espaces.
 // Exemple Tunisie : 21612345678
