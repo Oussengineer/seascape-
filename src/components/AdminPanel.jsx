@@ -1,23 +1,8 @@
 import { useState, useEffect } from 'react'
+import { API_URL } from '../config'
 
 const ADMIN_EMAIL = 'expeditionsseascape@gmail.com'
 const ADMIN_PASSWORD = 'Chahineseascape2026'
-const COUPONS_KEY = 'seascape_coupons'
-const BOOKINGS_KEY = 'seascape_bookings'
-
-function getCoupons() {
-  try { return JSON.parse(localStorage.getItem(COUPONS_KEY)) || [] }
-  catch { return [] }
-}
-
-function saveCoupons(list) {
-  localStorage.setItem(COUPONS_KEY, JSON.stringify(list))
-}
-
-function getBookings() {
-  try { return JSON.parse(localStorage.getItem(BOOKINGS_KEY)) || [] }
-  catch { return [] }
-}
 
 export default function AdminPanel() {
   const [loggedIn, setLoggedIn] = useState(false)
@@ -25,17 +10,25 @@ export default function AdminPanel() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [coupons, setCoupons] = useState([])
+  const [bookings, setBookings] = useState([])
   const [newCode, setNewCode] = useState('')
   const [newType, setNewType] = useState('percentage')
   const [newValue, setNewValue] = useState('')
   const [selectedCoupon, setSelectedCoupon] = useState(null)
-  const [bookings, setBookings] = useState([])
+
+  const loadData = async () => {
+    try {
+      const [cRes, bRes] = await Promise.all([
+        fetch(`${API_URL}/api/coupons`),
+        fetch(`${API_URL}/api/bookings`)
+      ])
+      setCoupons(await cRes.json())
+      setBookings(await bRes.json())
+    } catch {}
+  }
 
   useEffect(() => {
-    if (loggedIn) {
-      setCoupons(getCoupons())
-      setBookings(getBookings())
-    }
+    if (loggedIn) loadData()
   }, [loggedIn])
 
   const handleLogin = (e) => {
@@ -48,35 +41,35 @@ export default function AdminPanel() {
     }
   }
 
-  const addCoupon = (e) => {
+  const addCoupon = async (e) => {
     e.preventDefault()
     if (!newCode.trim() || !newValue) return
-    const list = getCoupons()
-    if (list.find(c => c.code === newCode.toUpperCase())) {
-      setError('Ce code existe déjà')
+    const res = await fetch(`${API_URL}/api/coupons`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: newCode.toUpperCase(), type: newType, value: Number(newValue) })
+    })
+    if (!res.ok) {
+      const data = await res.json()
+      setError(data.error || 'Erreur')
       return
     }
-    list.push({ code: newCode.toUpperCase(), type: newType, value: Number(newValue), active: true })
-    saveCoupons(list)
-    setCoupons(list)
+    setCoupons(await res.json())
     setNewCode('')
     setNewValue('')
     setError('')
   }
 
-  const removeCoupon = (code) => {
-    const list = getCoupons().filter(c => c.code !== code)
-    saveCoupons(list)
-    setCoupons(list)
+  const removeCoupon = async (code) => {
+    const res = await fetch(`${API_URL}/api/coupons/${code}`, { method: 'DELETE' })
+    setCoupons(await res.json())
+    setBookings(bookings.filter(b => b.couponCode !== code))
     if (selectedCoupon === code) setSelectedCoupon(null)
   }
 
-  const toggleActive = (code) => {
-    const list = getCoupons().map(c =>
-      c.code === code ? { ...c, active: !c.active } : c
-    )
-    saveCoupons(list)
-    setCoupons(list)
+  const toggleActive = async (code) => {
+    const res = await fetch(`${API_URL}/api/coupons/${code}/toggle`, { method: 'PUT' })
+    setCoupons(await res.json())
   }
 
   const formatDate = (iso) => {

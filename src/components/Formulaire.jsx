@@ -1,16 +1,8 @@
 import { useMemo, useState } from 'react'
 import Reveal from './Reveal'
-import { WHATSAPP_NUMBER, PRICES, PLATS_SUPP } from '../config'
+import { WHATSAPP_NUMBER, PRICES, PLATS_SUPP, API_URL } from '../config'
 
 const aujourdhui = new Date().toISOString().split('T')[0]
-
-const COUPONS_KEY = 'seascape_coupons'
-const BOOKINGS_KEY = 'seascape_bookings'
-
-function getCoupons() {
-  try { return JSON.parse(localStorage.getItem(COUPONS_KEY)) || [] }
-  catch { return [] }
-}
 
 const etatInitial = {
   nom: '',
@@ -59,15 +51,20 @@ export default function Formulaire() {
     }))
   }
 
-  const applyCoupon = () => {
-    const coupons = getCoupons()
-    const found = coupons.find(c => c.code === couponCode.toUpperCase() && c.active)
-    if (found) {
-      setAppliedCoupon(found)
-      setCouponError('')
-    } else {
-      setAppliedCoupon(null)
-      setCouponError('Code invalide ou inactif')
+  const applyCoupon = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/coupons`)
+      const coupons = await res.json()
+      const found = coupons.find(c => c.code === couponCode.toUpperCase() && c.active)
+      if (found) {
+        setAppliedCoupon(found)
+        setCouponError('')
+      } else {
+        setAppliedCoupon(null)
+        setCouponError('Code invalide ou inactif')
+      }
+    } catch {
+      setCouponError('Erreur de connexion')
     }
   }
 
@@ -123,26 +120,20 @@ export default function Formulaire() {
     )
   }
 
-  const envoyer = (e) => {
+  const envoyer = async (e) => {
     e.preventDefault()
     if (appliedCoupon) {
       try {
-        const bookings = JSON.parse(localStorage.getItem(BOOKINGS_KEY)) || []
-        bookings.push({
-          couponCode: appliedCoupon.code,
-          nom: form.nom,
-          telephone: form.telephone,
-          date: form.date,
-          adultes: form.adultes,
-          enfants1015: form.enfants1015,
-          enfantsMoins10: form.enfantsMoins10,
-          baladeBateau: form.baladeBateau,
-          scubaDiving: form.scubaDiving,
-          platsSupp: form.platsSupp,
-          message: form.message,
-          timestamp: new Date().toISOString()
+        await fetch(`${API_URL}/api/bookings`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            couponCode: appliedCoupon.code, nom: form.nom, telephone: form.telephone,
+            date: form.date, adultes: form.adultes, enfants1015: form.enfants1015,
+            enfantsMoins10: form.enfantsMoins10, baladeBateau: form.baladeBateau,
+            scubaDiving: form.scubaDiving, platsSupp: form.platsSupp, message: form.message
+          })
         })
-        localStorage.setItem(BOOKINGS_KEY, JSON.stringify(bookings))
       } catch {}
     }
     const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(construireMessage())}`
